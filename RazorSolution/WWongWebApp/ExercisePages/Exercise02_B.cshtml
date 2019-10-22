@@ -1,0 +1,81 @@
+﻿@{
+    Page.Title = "Exercise02_B";
+    Layout = "~/_Layout.cshtml";
+    var searchargument = Request.QueryString["name"];
+
+    if (string.IsNullOrEmpty(searchargument))
+    {
+        Response.Redirect("Exercise02_A.cshtml");
+    }
+
+
+    var button = Request.Form["button"];
+    var categorylist = Request.Form["categorylist"];
+    if (categorylist == null)
+    {
+        categorylist = "0";
+    }
+
+    var db = Database.Open("CDB");
+
+    var partialstring = "%" + searchargument + "%";
+
+    var ddlcommand = "SELECT ArtistId, Name " +
+                "FROM Artists " +
+                "Where Name like @0 " +
+                "ORDER BY Name";
+
+    var ddlresults = db.Query(ddlcommand, partialstring);
+
+}
+
+@section pagetitle{
+    <h1>Exercise 2:DateBase Query</h1>
+}
+
+@if (IsPost)
+{
+    if (button.Equals("select"))
+    {
+        if (categorylist.Equals("0"))
+        {
+            <p>Make a select of a Artist.</p>
+        }
+        else
+        {
+
+            var testcommand = "SELECT AlbumId " +
+            "FROM Albums " +
+            "WHERE ArtistId like @0";
+
+            var testresults = db.Query(testcommand, categorylist);
+            if (testresults.Count() == 0)
+            {
+                <p>No album found from the requested artist. Select a different artist.</p>
+            }
+            else
+            {
+                Response.Redirect("Exercise02_C.cshtml?pid=" + categorylist);
+            }
+        }
+    }
+}
+
+<form id="EX02" method="post">
+    <div class=" col-md-3 ">
+        <br />
+        <label for="categorylist">Select an Artist:</label><br />
+        <select id="categorylist" name="categorylist">
+            <option value="0">select ...</option>
+            @foreach (var catitem in ddlresults)
+            {
+            <option value="@catitem.ArtistId" selected>@catitem[1]</option>  
+            }
+        </select><br /><br />
+
+        <button type="submit" id="button" name="button"
+                value="select" class="btn btn-primary">
+            Fentch Albums
+        </button>
+    </div>
+</form>

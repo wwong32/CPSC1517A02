@@ -1,0 +1,75 @@
+﻿@{
+    Page.Title = "Exercise01";
+    Layout = "~/_Layout.cshtml";
+
+    var CustomerName = Request.Form["CustomerName"];
+    var choices = "";
+    var button = Request.Form["button"];
+}
+@section pagetitle{ <h1>Exercise01: Basic Form Processing </h1>}
+
+@if (IsPost)
+{
+    if (button.Equals("reset"))
+    {
+        CustomerName = null;
+        choices = "";
+    }
+    else
+    {
+        choices = Request.Form["food"];
+        if (string.IsNullOrEmpty(choices))
+        {
+            choices = "";
+            <p><string>Please select the meal entries of your choice</string></p>
+        }
+        if (string.IsNullOrEmpty(CustomerName))
+        {
+            CustomerName = null;
+            <p><string>Please enter your name</string></p>
+        }
+        else if(!string.IsNullOrEmpty(CustomerName)&&!string.IsNullOrEmpty(choices))
+        {
+            <p>@CustomerName, I see that you have the following meal entries:
+            <ul>
+                @foreach (var platform in choices.Split(','))
+                {
+                    <li>@platform</li>
+                }
+            </ul>    
+
+            </p>
+        }
+    }
+}
+
+<form id=" EX01" method="post">
+    <div class="row">
+        <div class=" col-md-3 ">
+            Customer Name:
+            <input type="text" id="CustomerName" name="CustomerName" value="@CustomerName" />
+        </div>
+
+        <div class="col-md-9">
+            <label>Choose your meal items</label>
+            <br />
+            <input type="checkbox" value="Steak" id="food" name="food" />Steak
+            <br />
+            <input type="checkbox" value="Seafood" id="food" name="food" />SeaFood
+            <br />
+            <input type="checkbox" value="Vegatables" id="food" name="food" />Vegatables
+            <br />
+        </div>
+    </div>
+    <div class=" row">
+        &nbsp;&nbsp;
+        <button type="submit" value="submit" id="button" name="button">
+            Submit
+        </button>
+        &nbsp;&nbsp;
+        <button type="submit" value="reset" id="button" name="button">
+            Reset
+        </button>
+    </div>
+
+</form>

@@ -1,0 +1,52 @@
+﻿@{
+    Page.Title = "Exercise02_C";
+    Layout = "~/_Layout.cshtml";
+    var categoryid = Request.QueryString["pid"];
+
+    if (string.IsNullOrEmpty(categoryid))
+    {
+        Response.Redirect("Exercise02_A.cshtml");
+    }
+
+    var db = Database.Open("CDB");
+    var scalarcommand = "SELECT Name FROM Artists WHERE ArtistId = @0";
+    var categoryname = db.QueryValue(scalarcommand, categoryid);
+
+    var querycommand = "SELECT AlbumId, Title, ReleaseYear, ReleaseLabel " +
+                "FROM Albums " +
+                "WHERE ArtistId = @0 " +
+                "ORDER BY Title";
+    var results = db.Query(querycommand, categoryid);
+
+    var gridinstance = new WebGrid(results, rowsPerPage: 10);
+}
+
+@section pagetitle{
+    <h1>Exercise 2:DateBase Query</h1>
+}
+
+<div class="row">
+   <div class="col-11">
+      <h3>Products for @categoryname</h3>
+
+       @gridinstance.GetHtml(
+       tableStyle: "table table-bordered table-striped table-hover",
+       mode: WebGridPagerModes.All,
+       firstText: "Start",
+       lastText: "End",
+       columns: gridinstance.Columns(
+           gridinstance.Column(columnName: "AlbumId", header: "ID",
+           canSort: true),
+
+           gridinstance.Column(columnName: "Title", header: "Title",
+           canSort: true),
+
+           gridinstance.Column(columnName: "ReleaseYear", header:"Released"),
+
+           gridinstance.Column(columnName: "ReleaseLabel", header: "Label")
+
+           ))
+
+
+    </div>
+</div>

@@ -1,0 +1,55 @@
+﻿@{
+        Page.Title = "Exercise02";
+        Layout = "~/_Layout.cshtml";
+
+        var searchargument = Request.Form["searchargument"];
+        var button = Request.Form["button"];
+
+        var db = Database.Open("CDB");
+
+        var partialstring = "%" + searchargument + "%";
+
+        var querycommand = "SELECT ArtistId " +
+                "FROM Artists " +
+                "WHERE Name like @0";
+
+    var results = db.QuerySingle(querycommand, partialstring);
+
+    }
+
+    @section pagetitle{
+        <h1>Exercise 2:DateBase Query</h1>
+    }
+
+    @if (IsPost)
+    {
+        if (button.Equals("search"))
+        {
+            if (string.IsNullOrEmpty(searchargument))
+            {
+                <p>Please enter an artist name (or part of name) for the search.</p>
+            }
+            else if (results == null)
+            {
+            <p>No artist found for searched artist name.</p>
+            }
+            else
+            {
+                <p>Found</p>
+                Response.Redirect("Exercise02_B.cshtml?name=" + searchargument);
+            }
+        }
+    }
+    <form id="EX02" method="post">
+        <div class="row">
+            <div class=" col-md-3 ">
+                <label for=" searchargument">Enter artist name:</label><br />
+                <input type="text" id="searchargument" name="searchargument" value="@searchargument" />
+                <br /> <br />
+                <button type="submit" id="Button" name="Button"
+                        value="search" class="btn btn-primary">
+                    Fentch Albums
+                 </button>
+            </div>
+        </div>
+    </form>
